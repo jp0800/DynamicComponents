@@ -1,9 +1,5 @@
 <!-- @/components/CommonTableComponent/CommonTable.vue -->
 <template>
-  <br />{{ Object.entries(HEADERS_MANAGER).sort((a, b) => a[0].localeCompare(b[0])) }}
-  <br />{{ Object.entries(ROWS_MANAGER).sort((a, b) => a[0].localeCompare(b[0])) }}
-  
-
   <table>
     <tr>
       <th v-for="(header, columnIndex) in HEADERS" :key="columnIndex" v-bind="header.directives">

@@ -359,3 +359,7 @@ path = '/mnt/data/tools_gui.py'
 with open(path, 'w', encoding='utf-8') as f:
     f.write(script)
 path
+
+
+# pip install PySimpleGUI pillow pandas openpyxl
+# Run: python /mnt/data/tools_gui.py

@@ -1,0 +1,200 @@
+Plants Conversation.
+
+https://chatgpt.com/share/69d70e11-20b4-8324-8cf2-529f361a7f77
+
+
+
+
+Here’s a clean ERD (Entity Relationship Diagram) based on our finalized design:
+
+
+---
+
+🌱 ERD – Final Architecture
+
+USER_POOL
+---------
+id (PK)
+username
+password
+role
+
+        1
+        │
+        │
+        └───────────────┐
+                        │
+CUSTOMER                │
+--------
+id (PK)                 │
+user_pool_id (FK) ◄─────┘
+role_type (Admin / Agriculturist / Farmer / Sub-Farmer)
+parent_customer_id (FK, nullable)
+
+        1
+        │
+        │
+        ▼
+
+GREENHOUSE
+----------
+id (PK)
+customer_id (FK)
+name
+location
+
+        1
+        │
+        ├───────────────┐
+        │               │
+        ▼               ▼
+
+SENSOR_SOURCE (S3 Source)
+---------------
+id (PK)
+greenhouse_id (FK)
+source_key (S3 / stream identifier)
+is_active
+created_at
+
+        1
+        │
+        ▼
+
+SENSOR
+------
+id (PK)
+sensor_source_id (FK)
+device_identifier
+status (active / replaced / inactive)
+installed_at
+
+        1
+        │
+        ▼
+
+PLANT
+-----
+id (PK)
+sensor_source_id (FK)   ◄── KEY LINK
+plant_type
+ec_min
+ec_max
+ph_min
+ph_max
+temp_min
+temp_max
+created_at
+
+        1
+        │
+        ▼
+
+PLANT_READING (optional but recommended)
+--------------
+id (PK)
+sensor_source_id (FK)
+ec
+ph
+temperature
+timestamp
+
+
+---
+
+🔗 Key Relationships
+
+👤 User → Customer
+
+1:1 (or 1:N depending on system design)
+
+
+🌍 Customer → Greenhouse
+
+1:N
+
+
+🌡️ Greenhouse → Sensor Source
+
+1:N
+
+
+📡 Sensor Source → Sensor
+
+1:N over time (but only 1 active at a time)
+
+
+🌱 Sensor Source → Plant
+
+1:N
+
+
+👉 This is the critical design decision
+
+> Plants are tied to Sensor Source, not Sensor
+
+
+
+
+---
+
+🔥 Important Rules Enforced by This ERD
+
+1. Sensor Replacement
+
+New sensor can reuse same sensor_source_id
+
+Old sensor becomes inactive
+
+
+
+---
+
+2. Only One Active Sensor Per Source
+
+UNIQUE (sensor_source_id) WHERE status = 'active'
+
+
+---
+
+3. Plants Follow the Source
+
+Switching sensors → plants stay the same
+
+Different source → different plants
+
+
+
+---
+
+4. Data Integrity
+
+All environmental readings tied to:
+
+sensor_source_id
+
+
+
+---
+
+🧠 Why This ERD Works Well
+
+✔ Supports sensor replacement
+✔ Keeps historical consistency
+✔ Separates hardware from logical data stream
+✔ Allows multiple plants per environment
+✔ Clean and scalable
+
+
+---
+
+If you want next, I can:
+
+Convert this into PostgreSQL DDL (CREATE TABLE scripts)
+
+Add indexes + constraints
+
+Or create a migration plan from your current schema
+
+
+This is already a production-grade ERD 🚀
